@@ -1,0 +1,167 @@
+{
+  "main": {
+    "id": "fdbd7f58b82d0b7c",
+    "type": "split",
+    "children": [
+      {
+        "id": "20aac7502ad64988",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c931be57ee765f48",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Комната с деревом и гномом.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "35bb0e2aef7852b4",
+    "type": "split",
+    "children": [
+      {
+        "id": "80f2900a5f3b389e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c45e79921a94fbc6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "6aede27dfdbc1f6a",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "e6bd48a8702428f4",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "d4da48bf33650d57",
+    "type": "split",
+    "children": [
+      {
+        "id": "4a7c292eed3b12d2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c88b641c7078fd48",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Комната с деревом и гномом.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "49dac03409b66f10",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Комната с деревом и гномом.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "d12971a998957c32",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "fac704e736e95533",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Комната с деревом и гномом.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "c931be57ee765f48",
+  "lastOpenFiles": [
+    "Дверь в комнату с фонтаном.md",
+    "Другой подозрительно выпирающий камень.md",
+    "Дверь в комнату с деревом и гномом.md",
+    "Комната с деревом и гномом.md",
+    "Сражение со скелетом.md",
+    "Дверь в комнату с саркофагами.md",
+    "Зелье уменьшения.md",
+    "Коридор влево.md",
+    "Ключ к первой двери.md",
+    "Коридор вправо.md",
+    "Закрытая дверь.md",
+    "Обыскать первую комнату.md",
+    "Подозрительно выпирающий камень.md",
+    "Факел.md",
+    "Первая комната.md"
+  ]
+}

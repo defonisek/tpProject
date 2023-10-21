@@ -10,15 +10,19 @@ def fightRound2pl():
 def fightRound3pl():
     pass
 class Player():
-    def __init__(self,hp, kz, kz_flag, hillC):
+    def __init__(self,hp, kz, kz_flag, hillC, attack_flag):
         self.hp = hp
         self.kz = kz
         self.kz_flag = kz_flag
         self.hillC = hillC
         self.kz_flag = 0
+        self.attack_flag = attack_flag
     def attack(self):
-        if (self.kz-random.randint(1,21))<=0:
-            self.hp -= random.randint(1,8)
+        self.attack_flag = 0
+        r = (self.kz - random.randint(1, 21))
+        if r <= 0:
+            self.hp -= random.randint(1, 8)
+            self.attack_flag = 1
 
     def defence(self):
         self.kz+=2
@@ -34,16 +38,19 @@ class Player():
             self.hillC -= 1
 
 class Npc():
-    def __init__(self,hp, kz, kz_flag):
+    def __init__(self,hp, kz, kz_flag, attack_flag):
         self.hp = hp
         self.kz = kz
         self.kz_flag = kz_flag
-
         self.kz_flag = 0
+        self.attack_flag = attack_flag
 
     def attack(self):
-        if (self.kz-random.randint(1,21))<=0:
+        self.attack_flag = 0
+        r = (self.kz-random.randint(1,21))
+        if r <= 0:
             self.hp -= random.randint(1,8)
+            self.attack_flag = 1
 
     def defence(self):
         self.kz += 5
@@ -53,8 +60,8 @@ class Npc():
         self.kz -= 5
         self.kz_flag = 0
 
-player1 = Player(hp=20, kz=14, kz_flag=0, hillC=0)
-enemy1 = Npc(hp=10, kz=10,kz_flag=0)
+player1 = Player(hp=20, kz=14, kz_flag=0, hillC=0, attack_flag=0)
+enemy1 = Npc(hp=10, kz=10,kz_flag=0, attack_flag=0)
 print(player1.hp)
 
 bot = telebot.TeleBot('6682494061:AAFLZH7Qj32HYffI2UQdgpXxj0giooBe5iQ')
@@ -82,14 +89,15 @@ def callback_worker(call):
     if call.data == "fight_loop": # запускает круг боя(условия выхода пока нет)
         msg = "text"
         global enemy1
-        enemy1 = Npc(hp=10, kz=10, kz_flag=0)
+        enemy1 = Npc(hp=10, kz=10, kz_flag=0,attack_flag=0)
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='атака', callback_data='attack_b')
         keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='лёгкая атака и блок', callback_data='defence_b')
         keyboard.add(key_oven)
-        key_oven = types.InlineKeyboardButton(text='выпить зелье лечения (осталось'+str(player1.hillC)+')', callback_data='defence_b')
+        key_oven = types.InlineKeyboardButton(text='выпить зелье лечения (осталось '+str(player1.hillC)+')', callback_data='defence_b')
         keyboard.add(key_oven)
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,reply_markup=None)
         bot.send_message(call.message.chat.id, "выберите действие", reply_markup=keyboard)
         print("inside fight")
 
@@ -104,8 +112,11 @@ def callback_worker(call):
         keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='лёгкая атака и блок', callback_data='defence_b')
         keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='выпить зелье лечения (осталось ' + str(player1.hillC) + ')',callback_data='defence_b')
+        keyboard.add(key_oven)
         aaa="у enemy1 осталось "+str(enemy1.hp)
         bbb = "enemy1 бьёт вас, ваш текущий hp " + str(player1.hp)
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
         bot.send_message(call.message.chat.id, text=aaa)
         bot.send_message(call.message.chat.id,text=bbb, reply_markup=keyboard)
         print("inside attack")
@@ -119,15 +130,38 @@ def callback_worker(call):
         keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='лёгкая атака и блок', callback_data='defence_b')
         keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='выпить зелье лечения (осталось ' + str(player1.hillC) + ')', callback_data='defence_b')
+        keyboard.add(key_oven)
         player1.attack()
         enemy1.hp -= 2
         print(player1.kz)
         aaa = "вы соверщаете лёгкую атаку и делаете блок, enemy1 hp = "+str(enemy1.hp)
         bbb = "enemy1 бьёт вас, ваш текущий hp " + str(player1.hp)
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
         bot.send_message(call.message.chat.id, text=aaa)
         bot.send_message(call.message.chat.id, text=bbb, reply_markup=keyboard)
     elif call.data == "hill":
-        pass
+        if player1.hillC > 0:
+            player1.hill()
+            player1.defenceoff()
+            keyboard = types.InlineKeyboardMarkup()
+            key_oven = types.InlineKeyboardButton(text='атака', callback_data='attack_b')
+            keyboard.add(key_oven)
+            key_oven = types.InlineKeyboardButton(text='лёгкая атака и блок', callback_data='defence_b')
+            keyboard.add(key_oven)
+            key_oven = types.InlineKeyboardButton(text='выпить зелье лечения (осталось ' + str(player1.hillC) + ')',callback_data='defence_b')
+            keyboard.add(key_oven)
+            player1.attack()
+            aaa = "вы соверщаете лёгкую атаку и делаете блок, enemy1 hp = " + str(enemy1.hp)
+            bbb = "enemy1 бьёт вас, ваш текущий hp " + str(player1.hp)
+            bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,reply_markup=None)
+            bot.send_message(call.message.chat.id, text=aaa)
+            bot.send_message(call.message.chat.id, text=bbb, reply_markup=keyboard)
+
+        else:
+            pass
+
+
 
 
 

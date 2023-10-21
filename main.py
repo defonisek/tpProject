@@ -194,10 +194,11 @@ def callback_worker(call):
             time.sleep(0.7)
             bot.send_message(call.message.chat.id, text=random.choice(players_hill_pack))
             time.sleep(0.7)
-            bot.send_message(call.message.chat.id, text=random.choice(enemy_attack_pack))
-            time.sleep(0.7)
             bot.send_message(call.message.chat.id, text=f"Вы восстановили {plhp} HP!")
             time.sleep(0.7)
+            bot.send_message(call.message.chat.id, text=random.choice(enemy_attack_pack))
+            time.sleep(0.7)
+
             if player1.attack_flag:
                 bot.send_message(call.message.chat.id, text="Скелет попадает по вам!")
             else:

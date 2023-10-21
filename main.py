@@ -44,6 +44,8 @@ class Player():
         if self.hillC > 0:
             self.hp += random.randint(2,7)
             self.hillC -= 1
+        if player1.hp > 20:
+            player1.hp = 20
 
 class Npc():
     def __init__(self,hp, kz, kz_flag, attack_flag):
@@ -81,7 +83,7 @@ def get_text_messages(message):
         global enemy1
         global player1
         enemy1 = Npc(hp=10, kz=10, kz_flag=0, attack_flag=0)
-        player1 = Player(hp=20, kz=14, kz_flag=0, hillC=1, attack_flag=0)
+        player1 = Player(hp=20, kz=14, kz_flag=0, hillC=3, attack_flag=0)
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='В бой', callback_data='fight_loop')
         keyboard.add(key_oven)
@@ -178,8 +180,6 @@ def callback_worker(call):
         if player1.hillC > 0 and player1.hp < 20:
             plhp = player1.hp
             player1.hill()
-            if player1.hp > 20:
-                player1.hp = 20
             player1.defenceoff()
             keyboard = types.InlineKeyboardMarkup()
             key_oven = types.InlineKeyboardButton(text='Атака', callback_data='attack_b')
@@ -204,7 +204,7 @@ def callback_worker(call):
             else:
                 bot.send_message(call.message.chat.id, text="Но скелет не попадает по вам!")
             bot.send_message(call.message.chat.id, text="Ваш HP: "+str(player1.hp)+" HP\nHP скелета: "+str(enemy1.hp)+" HP", reply_markup=keyboard)
-        if player1.hp == 20:
+        elif player1.hp == 20:
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,reply_markup=None)
             time.sleep(0.7)
             keyboard = types.InlineKeyboardMarkup()

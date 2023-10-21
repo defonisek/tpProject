@@ -4,22 +4,55 @@
     "type": "split",
     "children": [
       {
-        "id": "20aac7502ad64988",
+        "id": "0cb33ca80ea8db94",
         "type": "tabs",
         "children": [
           {
-            "id": "c931be57ee765f48",
+            "id": "cf44fe3d01f38507",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
+          },
+          {
+            "id": "65608948a90764da",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Комната с деревом и гномом.md",
+                "file": "Бой/Основные атаки.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "d6f6cf3d7dfda78d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Бой/Более безопасные атаки.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "9f07b3e77b40995e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Бой/Лечение.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -85,7 +118,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Комната с деревом и гномом.md",
+                "file": "Бой/Лечение.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +135,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Комната с деревом и гномом.md",
+                "file": "Бой/Лечение.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +158,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Комната с деревом и гномом.md"
+                "file": "Бой/Лечение.md"
               }
             }
           }
@@ -146,22 +179,28 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "c931be57ee765f48",
+  "active": "c45e79921a94fbc6",
   "lastOpenFiles": [
-    "Дверь в комнату с фонтаном.md",
-    "Другой подозрительно выпирающий камень.md",
-    "Дверь в комнату с деревом и гномом.md",
-    "Комната с деревом и гномом.md",
+    "Бой/Более безопасные атаки.md",
+    "Бой/Лечение.md",
+    "Untitled",
+    "Бой/Основные атаки.md",
+    "Бой",
+    "Первая комната.md",
     "Сражение со скелетом.md",
-    "Дверь в комнату с саркофагами.md",
-    "Зелье уменьшения.md",
     "Коридор влево.md",
-    "Ключ к первой двери.md",
+    "Распутье.md",
     "Коридор вправо.md",
     "Закрытая дверь.md",
+    "Ключ к первой двери.md",
     "Обыскать первую комнату.md",
-    "Подозрительно выпирающий камень.md",
     "Факел.md",
-    "Первая комната.md"
+    "Подозрительно выпирающий камень.md",
+    "Комната с деревом и гномом.md",
+    "Зелье уменьшения.md",
+    "Дверь в комнату с деревом и гномом.md",
+    "Дверь в комнату с фонтаном.md",
+    "Другой подозрительно выпирающий камень.md",
+    "Дверь в комнату с саркофагами.md"
   ]
 }

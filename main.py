@@ -11,12 +11,7 @@ players_hill_pack = ["Вы выпиваете зелье лечения, ощу�
 
 
 
-def fightRound2pl():
-    # while player1.hp>0 or
-    pass
 
-def fightRound3pl():
-    pass
 class Player():
     def __init__(self,hp, kz, kz_flag, hillC, attack_flag):
         self.hp = hp
@@ -126,8 +121,6 @@ def callback_worker(call):
         keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='Выпить зелье лечения (осталось ' + str(player1.hillC) + ')',callback_data='hill')
         keyboard.add(key_oven)
-        aaa="у enemy1 осталось "+str(enemy1.hp)
-        bbb = "enemy1 бьёт вас, ваш текущий hp " + str(player1.hp)
         bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
         time.sleep(0.7)
         bot.send_message(call.message.chat.id, text=random.choice(players_hard_attack_pack))
@@ -162,8 +155,6 @@ def callback_worker(call):
         player1.attack()
         enemy1.hp -= 2
         print(player1.kz)
-        aaa = "вы соверщаете лёгкую атаку и делаете блок, enemy1 hp = "+str(enemy1.hp)
-        bbb = "enemy1 бьёт вас, ваш текущий hp " + str(player1.hp)
         bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
         time.sleep(0.7)
         bot.send_message(call.message.chat.id, text=random.choice(players_safe_attack_pack))
@@ -217,8 +208,7 @@ def callback_worker(call):
             keyboard.add(key_oven)
             key_oven = types.InlineKeyboardButton(text='Лёгкая атака с уклонением', callback_data='defence_b')
             keyboard.add(key_oven)
-            key_oven = types.InlineKeyboardButton(text='Выпить зелье лечения (осталось ' + str(player1.hillC) + ')',
-                                                  callback_data='hill')
+            key_oven = types.InlineKeyboardButton(text='Выпить зелье лечения (осталось ' + str(player1.hillC) + ')', callback_data='hill')
             keyboard.add(key_oven)
             bot.send_message(call.message.chat.id, text="Вы полностью здоровы", reply_markup=keyboard)
         else:

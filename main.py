@@ -67,7 +67,7 @@ class Npc():
 
 player1 = Player(hp=20, kz=14, kz_flag=0, hillC=1, attack_flag=0)
 enemy1 = Npc(hp=10, kz=10,kz_flag=0, attack_flag=0)
-flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0}
+flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'skeleton_fight':0}
 
 bot = telebot.TeleBot('6682494061:AAFLZH7Qj32HYffI2UQdgpXxj0giooBe5iQ')
 
@@ -80,7 +80,7 @@ def get_text_messages(message):
         global enemy1
         player1 = Player(hp=20, kz=14, kz_flag=0, hillC=1, attack_flag=0)
         enemy1 = Npc(hp=10, kz=10,kz_flag=0, attack_flag=0)
-        flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0}
+        flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'skeleton_fight':0}
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='Да!', callback_data='first_room_start')
         keyboard.add(key_oven)
@@ -184,11 +184,15 @@ def callback_worker(call):
         keyboard.add(key_oven)
         bot.send_message(call.message.chat.id,text='Вы подошли к закрытой деревянной двери, держа факел в руке.',reply_markup=keyboard)
     
-    elif call.data == 'crossroads':
+    elif call.data == 'crossroads': # Распутье.
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=None)
         keyboard = types.InlineKeyboardMarkup()
-        key_oven = types.InlineKeyboardButton(text='Пойти налево',callback_data='fight_loop')
-        keyboard.add(key_oven)
+        if flags['skeleton_fight'] == 0:
+            key_oven = types.InlineKeyboardButton(text='Пойти налево',callback_data='fight_loop')
+            keyboard.add(key_oven)
+        else:
+            key_oven = types.InlineKeyboardButton(text='Пойти налево',callback_data='dead_skeleton')
+            keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='Пойти направо',callback_data='fountain_door')
         keyboard.add(key_oven)
         bot.send_message(call.message.chat.id,text='Достав ключ из своих карманов, вы вставили его в замочную скважину. Повернув ключ, вы услышали щелчок, и замок отперся. Откинув замок в сторону, вы аккуратно проходите через дверь.'\
@@ -198,6 +202,10 @@ def callback_worker(call):
     ### НИЖЕ КОД БОЯ
 
     elif call.data == "fight_loop": # запускает круг боя(условия выхода пока нет)
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=None)
+        bot.send_message(call.message.chat.id,text='Повернув влево и приближаясь к источнику странных звуков, ваше сердце начинает биться сильнее от страха и неизвестности. По мере продвижения по коридору, вы видите что-то, что быстро вызывает в вас тревожное волнение.'\
+                        ' Ваш взгляд падает на живого скелета, бездумно бродящего вдоль коридора. В его руках вы видите ржавый меч. Скелет явно заметил ваше присутствие и направил свой меч в вашем направлении.',reply_markup=None)
+        time.sleep(1)
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='Атака', callback_data='attack_b')
         keyboard.add(key_oven)
@@ -205,9 +213,8 @@ def callback_worker(call):
         keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='Выпить зелье лечения (осталось '+str(player1.hillC)+')', callback_data='hill')
         keyboard.add(key_oven)
-        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,reply_markup=None)
         time.sleep(0.7)
-        bot.send_message(call.message.chat.id, "Выберите действие:", reply_markup=keyboard)
+        bot.send_message(call.message.chat.id, "Выберите действие!", reply_markup=keyboard)
         print("inside fight")
 
     elif call.data == "attack_b": # делает атаку по enemy1(надо прописать атаку по игроку)
@@ -325,6 +332,17 @@ def callback_worker(call):
             keyboard.add(key_oven)
             bot.send_message(call.message.chat.id, text="У вас кончились зелья лечения!", reply_markup=keyboard)
 
+    elif call.data == 'looting': # Вот сюда нужно меня выкинуть после победы.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        flags['skeleton_fight'] = 1
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Пройти дальше к двери', callback_data='gnome_door')
+        keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='Вернуться к выходу из первой комнаты', callback_data='crossroads')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Вы решаете осмотреть развалины скелета, чтобы проверить, есть ли на нем что-либо интересное.'\
+                        ' Ржавый меч, который он держал, кажется абсолютно бесполезным и сломанным, но ваш взгляд упирается в маленький флакончик с голубой жидкостью, который был прикреплен к его поясу.'\
+                        ' Вы осторожно берете флакончик и осматриваете его. Голубая жидкость кажется сверкающей и магической. Вы осознаете, что это зелье, которое, возможно, может быть полезным в будущем.', reply_markup=keyboard)
 
 
 

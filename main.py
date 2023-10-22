@@ -77,8 +77,8 @@ def get_text_messages(message):
     if message.text == "/start": #запрашивает начало боя
         global enemy1
         global player1
-        enemy1 = Npc(hp=10, kz=10, kz_flag=0, attack_flag=0)
-        player1 = Player(hp=20, kz=14, kz_flag=0, hillC=3, attack_flag=0)
+        enemy1 = Npc(hp=10, kz=10, kz_flag=0, attack_flag=0) #  вынести туда, где запрашиввется fight loop
+        player1 = Player(hp=20, kz=14, kz_flag=0, hillC=3, attack_flag=0) # набо будет вынести за пределы старта
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='В бой', callback_data='fight_loop')
         keyboard.add(key_oven)
@@ -185,6 +185,7 @@ def callback_worker(call):
             keyboard.add(key_oven)
             player1.attack()
             player1.hill()
+            plhp = player1.hp - plhp
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,reply_markup=None)
             time.sleep(0.7)
             bot.send_message(call.message.chat.id, text=random.choice(players_hill_pack))

@@ -202,6 +202,8 @@ def callback_worker(call):
     ### НИЖЕ КОД БОЯ
 
     elif call.data == "fight_loop": # запускает круг боя(условия выхода пока нет)
+        global enemy1
+        enemy1 = Npc(hp=10, kz=10, kz_flag=0, attack_flag=0)
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=None)
         bot.send_message(call.message.chat.id,text='Повернув влево и приближаясь к источнику странных звуков, ваше сердце начинает биться сильнее от страха и неизвестности. По мере продвижения по коридору, вы видите что-то, что быстро вызывает в вас тревожное волнение.'\
                         ' Ваш взгляд падает на живого скелета, бездумно бродящего вдоль коридора. В его руках вы видите ржавый меч. Скелет явно заметил ваше присутствие и направил свой меч в вашем направлении.',reply_markup=None)

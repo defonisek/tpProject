@@ -67,7 +67,7 @@ class Npc():
 
 player1 = Player(hp=2, kz=14, kz_flag=0, hillC=1, attack_flag=0)
 enemy1 = Npc(hp=10, kz=10,kz_flag=0, attack_flag=0)
-flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'crossroads':0,'skeleton_fight':0,'gnome_killed':0,'gnome_relationship':2,'gerard':0,'who':0,'golden_key':0}
+flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'crossroads':0,'skeleton_fight':0,'gnome_killed':0,'gnome_relationship':2,'gerard':0,'who':0,'golden_key':0,'fountain_room_checked':0,'door_opened':0}
 
 bot = telebot.TeleBot('6682494061:AAFLZH7Qj32HYffI2UQdgpXxj0giooBe5iQ')
 
@@ -79,7 +79,7 @@ def get_text_messages(message):
         global player1
 
         player1 = Player(hp=20, kz=14, kz_flag=0, hillC=1, attack_flag=0) # изменять для тестирования праметры игрока
-        flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'crossroads':0,'skeleton_fight':0,'gnome_killed':0,'gnome_relationship':2,'gerard':0,'who':0,'golden_key':0}
+        flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'crossroads':0,'skeleton_fight':0,'gnome_killed':0,'gnome_relationship':2,'gerard':0,'who':0,'golden_key':0,'fountain_room_checked':0,'door_opened':0}
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='Да!', callback_data='first_room_start')
         keyboard.add(key_oven)
@@ -399,7 +399,6 @@ def callback_worker(call):
     #бой со вторым противником ниже
     #
     elif call.data == "fight_loop_final": # запускает круг боя(условия выхода пока нет)
-        global enemy1
         enemy1 = Npc(hp=3, kz=10, kz_flag=0, attack_flag=0) # изменять для тестирования праметры противника
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=None)
         bot.send_message(call.message.chat.id,text='Повернув влево и приближаясь к источнику странных звуков, ваше сердце начинает биться сильнее от страха и неизвестности. По мере продвижения по коридору, вы видите что-то, что быстро вызывает в вас тревожное волнение.'\
@@ -770,6 +769,89 @@ def callback_worker(call):
         flags['golden_key'] = 1
         bot.send_message(call.message.chat.id, text='- Хм... Возможно, ты сможешь уговорить своего отца - ведь ты не помнишь ни одного магического слова... Так и быть, стоит рискнуть. Держи, это ключ от комнаты Жерарда. Она дальше по коридору. Не прощаемся!',reply_markup=keyboard)
 
+
+    elif call.data == 'fountain_door': # Проход направо с распутья.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Зайти в дверь',callback_data='fountain_room')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Вы проходите направо. Лишь только факел позволяет вам что-то видеть в местной кромешной темноте. Звук воды усиливается, и через пару минут вы доходите до деревянной двери.',reply_markup=keyboard)
+
+    elif call.data == 'fountain_room': # Комната с фонтаном и маленькой дыркой.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        if flags['fountain_room_checked'] == 0:
+            key_oven = types.InlineKeyboardButton(text='Осмотреть комнату повнимательнее',callback_data='i_love_hse')
+            keyboard.add(key_oven)
+        if flags['fountain_room_checked'] == 1 and flags['door_opened'] == 0:
+            key_oven = types.InlineKeyboardButton(text='Подойти к дырке',callback_data='i_love_hse')
+            keyboard.add(key_oven)
+        if flags['door_opened'] == 1:
+            key_oven = types.InlineKeyboardButton(text='Подойти к иллюзионной двери',callback_data='i_love_hse')
+            keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='Подойти к фонтану',callback_data='fountain')
+        keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='Выйти из комнаты до распутья',callback_data='crossroads')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Перед вами небольшая комната, и источник тех самых звуков - фонтан с водой.',reply_markup=keyboard)
+
+    elif call.data == 'i_love_hse': # Обыскивание комнаты, после станет подходом к дырке.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        if flags['skeleton_fight'] == 1 and flags['door_opened'] == 0:
+            key_oven = types.InlineKeyboardButton(text='Попробовать выпить подобранное зелье',callback_data='after_fountain')
+            keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='Пойти в центр комнаты',callback_data='fountain_room')
+        keyboard.add(key_oven)
+        if flags['fountain_room_checked'] == 0:
+            bot.send_message(call.message.chat.id, text='Походив и поизучав комнату, вы находите очень маленькую дырку в стене, будто проетую мышью. Очевидно, так просто вам туда не влезть.',reply_markup=keyboard)
+        if flags['fountain_room_checked'] == 1 and flags['door_opened'] == 0:
+            bot.send_message(call.message.chat.id, text='Вы подошли к дырке в стене.',reply_markup=keyboard)
+        flags['fountain_room_checked'] = 1
+        if flags['door_opened'] == 1:
+            key_oven = types.InlineKeyboardButton(text='Пойти в скрытую комнату',callback_data='opened_after_fountain')
+            keyboard.add(key_oven)
+            bot.send_message(call.message.chat.id, text='Вы подошли к неожиданно открытой двери, которая ранее была стеной, со стороны комнаты с фонтаном.',reply_markup=keyboard)
+
+    elif call.data == 'fountain': # Сам фонтан.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Вернуться в центр комнаты',callback_data='fountain_room')
+        keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='Утопиться',callback_data='drown')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Вы подошли к фонтану. Это самый непримечательный каменный фонтан, который вы когда-либо видели. Учитывая то, что у вас нет памяти, это не говорит многое об эстетических качествах оного фонтана, но тем не менее - вам не нравится. Но, зато, в нем есть вода. Интересно, она откуда-то поступает или постоянно циркулирует?',reply_markup=keyboard)
+
+    elif call.data == 'drown': # Смерть от утопления.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        bot.send_message(call.message.chat.id, text='Вы долго смотрели на свое отражение в воде фонтана и осознали - вы больше не хотите жить. Отбросив факел в сторону, вы легли в воду лицом вниз. Переборов инстинкт самосохранения, судя по всему, потерянный вместе с памятью, вы смогли продержаться до момента потери сознания.\nПосле чего, вы погибли! Для того, чтобы начать заново, напишите "/start".')
+
+    elif call.data == 'after_fountain': # Уменьшение и открытие двери.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Открыть появившуюся дверь',callback_data='i_love_hse')
+        flags['door_opened'] = 1
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Вы выпили зелье и уменьшились до размера, как раз подходящего под эту дыру в стене. Вы спокойно прошли через неё и почти сразу вернули себе свой привычный размер.\nПрежде, чем вы что-либо осмотрели в комнате, в которую зашли, вы заметили, что позади вас есть дверь, которой явно не было с обратной стороны.',reply_markup=keyboard)
+
+    elif call.data == 'opened_after_fountain': # Комната с золотистой дверью.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Подойти к золотистой двери',callback_data='golden_door')
+        keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='Вернуться в комнату с фонтаном',callback_data='i_love_hse')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Вы видите пустую каменную комнату с золотистой дверью спереди и иллюзионной сзади. Очевидно, что эта комната предназначена лишь для создания пустой зоны между иллюзионной дверью позади вас и золотистой спереди.',reply_markup=keyboard)
+
+    elif call.data == 'golden_door':
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Отойти от двери',callback_data='opened_after_fountain')
+        keyboard.add(key_oven)
+        if flags['gnome_killed'] == 1 or flags['golden_key'] == 1:
+            key_oven = types.InlineKeyboardButton(text='Попробовать открыть дверь золотым ключом',callback_data='fight_loop_final')
+            keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Вы подходите к золотистой двери, замок которой встроен непосредственно в саму дверь.',reply_markup=keyboard)
 
 
 bot.polling(none_stop=True, interval=0)

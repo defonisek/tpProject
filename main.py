@@ -78,7 +78,7 @@ def get_text_messages(message):
         global flags
         global player1
         global enemy1
-        player1 = Player(hp=2, kz=14, kz_flag=0, hillC=1, attack_flag=0) # изменять для тестирования праметры игрока
+        player1 = Player(hp=20, kz=14, kz_flag=0, hillC=1, attack_flag=0) # изменять для тестирования праметры игрока
         enemy1 = Npc(hp=10, kz=10,kz_flag=0, attack_flag=0)
         flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'skeleton_fight':0}
         keyboard = types.InlineKeyboardMarkup()
@@ -306,7 +306,7 @@ def callback_worker(call):
             time.sleep(0.7)
 
         elif enemy1.hp <= 0:
-            bot.send_message(call.message.chat.id, text="С последним решительным ударом, который вы нанесли скелету,он разлетается на кучу костей с характерным звуком. Теперь вы стоите перед развалинами некогда \"живого\" скелета, который больше не представляет никакой угрозы.")
+            #bot.send_message(call.message.chat.id, text="С последним решительным ударом, который вы нанесли скелету,он разлетается на кучу костей с характерным звуком. Теперь вы стоите перед развалинами некогда \"живого\" скелета, который больше не представляет никакой угрозы.")
             keyboard = types.InlineKeyboardMarkup()
             key_oven = types.InlineKeyboardButton(text='Осмотреть труп скелета', callback_data='looting')
             keyboard.add(key_oven)
@@ -355,7 +355,7 @@ def callback_worker(call):
                 time.sleep(0.7)
 
             elif enemy1.hp <= 0:
-                bot.send_message(call.message.chat.id, text="С последним решительным ударом, который вы нанесли скелету, разлетается на кучу костей с характерным звуком. Теперь вы стоите перед развалинами некогда \"живого\" скелета, который больше не представляет никакой угрозы.")
+                #bot.send_message(call.message.chat.id, text="С последним решительным ударом, который вы нанесли скелету, разлетается на кучу костей с характерным звуком. Теперь вы стоите перед развалинами некогда \"живого\" скелета, который больше не представляет никакой угрозы.")
                 keyboard = types.InlineKeyboardMarkup()
                 key_oven = types.InlineKeyboardButton(text='Осмотреть труп скелета', callback_data='looting')
                 keyboard.add(key_oven)

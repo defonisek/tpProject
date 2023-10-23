@@ -67,7 +67,7 @@ class Npc():
 
 player1 = Player(hp=2, kz=14, kz_flag=0, hillC=1, attack_flag=0)
 enemy1 = Npc(hp=10, kz=10,kz_flag=0, attack_flag=0)
-flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'skeleton_fight':0,'gnome_killed':0,'gnome_relationship':2}
+flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'crossroads':0,'skeleton_fight':0,'gnome_killed':0,'gnome_relationship':2,'gerard':0,'who':0,'golden_key':0}
 
 bot = telebot.TeleBot('6682494061:AAFLZH7Qj32HYffI2UQdgpXxj0giooBe5iQ')
 
@@ -78,7 +78,7 @@ def get_text_messages(message):
         global flags
         global player1
         player1 = Player(hp=20, kz=14, kz_flag=0, hillC=1, attack_flag=0) # изменять для тестирования праметры игрока
-        flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'skeleton_fight':0,'gnome_killed':0,'gnome_relationship':2}
+        flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'crossroads':0,'skeleton_fight':0,'gnome_killed':0,'gnome_relationship':2,'gerard':0,'who':0,'golden_key':0}
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='Да!', callback_data='first_room_start')
         keyboard.add(key_oven)
@@ -104,7 +104,7 @@ def callback_worker(call):
             key_oven = types.InlineKeyboardButton(text='Подойти к одному из факелов',callback_data='check_torch')
             keyboard.add(key_oven)
             bot.send_message(call.message.chat.id,'Вы просыпаетесь в узкой каменной комнате с сырыми стенами.'\
-                        ' Холодный воздух царит в этом месте, и вам непонятно, как вы оказались здесь. Ваши воспоминания исчезли,'\
+                        ' Воздух в этом месте неприятно холодный, и вам непонятно, как вы оказались здесь. Ваши воспоминания исчезли,'\
                         ' и местоположение этой комнаты остается загадкой. Окинув взглядом комнату, вы видите только две вещи, которые могут'\
                         ' заинтересовать: деревянную дверь с массивным железным замком и два старых факела, прикрепленных к стенам слева и справа'\
                         ' от вас. Осмотрев себя, вы понимаете, что вы не ранены, и в своих карманах вы находите лишь кинжал и три зелья лечения.'\
@@ -193,10 +193,14 @@ def callback_worker(call):
             keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='Пойти направо',callback_data='fountain_door')
         keyboard.add(key_oven)
-        bot.send_message(call.message.chat.id,text='Достав ключ из своих карманов, вы вставили его в замочную скважину. Повернув ключ, вы услышали щелчок, и замок отперся. Откинув замок в сторону, вы аккуратно проходите через дверь.'\
-                        ' Вы оказываетесь в узком, холодном каменном коридоре, который тянется в обе стороны. Ваши воспоминания о прошлом остаются пустыми, и перед вами стоит выбор, который наполняет вас некоторым беспокойством. Слева от вас слышатся странные, приглушенные звуки, будто что-то движется по каменному полу.'\
-                        ' Справа от вас раздаются звуки, напоминающие плеск воды.',reply_markup=keyboard)
-    
+        if flags['crossroads'] == 0:
+            bot.send_message(call.message.chat.id,text='Достав ключ из своих карманов, вы вставили его в замочную скважину. Повернув ключ, вы услышали щелчок, и замок отперся. Откинув замок в сторону, вы аккуратно проходите через дверь.'\
+                            ' Вы оказываетесь в узком, холодном каменном коридоре, который тянется в обе стороны. Ваши воспоминания о прошлом остаются пустыми, и перед вами стоит выбор, который наполняет вас некоторым беспокойством. Слева от вас слышатся странные, приглушенные звуки, будто что-то движется по каменному полу.'\
+                            ' Справа от вас раздаются звуки, напоминающие плеск воды.',reply_markup=keyboard)
+            flags['crossroads'] = 1
+        else:
+            bot.send_message(call.message.chat.id,text='Вы вернулись ко входу в комнату вашего заточения. Куда пойдете?',reply_markup=keyboard)
+
     ### НИЖЕ КОД БОЯ
 
     elif call.data == "fight_loop": # запускает круг боя(условия выхода пока нет)
@@ -414,13 +418,20 @@ def callback_worker(call):
     elif call.data == 'gnome_door': # Дверь у комнаты гнома.
         bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
         keyboard = types.InlineKeyboardMarkup()
-        key_oven = types.InlineKeyboardButton(text='Открыть дверь и зайти', callback_data='gnome_room')
-        keyboard.add(key_oven)
+        if flags['gerard'] == 0 and flags['gnome_killed'] == 0:
+            key_oven = types.InlineKeyboardButton(text='Открыть дверь и зайти', callback_data='gnome_room')
+            keyboard.add(key_oven)
+        if flags['gerard'] == 1 and flags['who'] == 1:
+            key_oven = types.InlineKeyboardButton(text='Открыть дверь и зайти', callback_data='gnome_room_alive')
+            keyboard.add(key_oven)
+        if flags['gnome_killed'] == 1:
+            key_oven = types.InlineKeyboardButton(text='Открыть дверь и зайти', callback_data='gnome_room_dead')
+            keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='Отойти к трупу скелета',callback_data='dead_skeleton')
         keyboard.add(key_oven)
         bot.send_message(call.message.chat.id, text='Вы оказываетесь у деревянной двери без какого-либо видимого замка. Вокруг двери, на стенах, нет ничего примечательного. Что делаете?',reply_markup=keyboard)
 
-    elif call.data == 'gnome_room': # Войдя в комнату гнома, пока он живой.
+    elif call.data == 'gnome_room': # Вход в комнату гнома, первая.
         bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='Подойти к гному и дереву',callback_data='near_gnome_alive')
@@ -429,28 +440,133 @@ def callback_worker(call):
         keyboard.add(key_oven)
         bot.send_message(call.message.chat.id, text='Зайдя в комнату, вы наблюдаете странную картину - внутри каменной, освещенной непонятным способом комнаты стоит дерево (судя по яблокам, висящих на ветках, яблоня), под которым сидит синебородый старый гном в шляпе.',reply_markup=keyboard)
 
+    elif call.data == 'gnome_room_dead': # Вход в комнату гнома, когда он убит.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Выйти из комнаты',callback_data='gnome_door')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Вы отошли от трупа гнома. Вам больше не о чем с ним говорить.',reply_markup=keyboard)
+
+    elif call.data == 'gnome_room_alive': # Вход в комнату гнома, когда он живой.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Подойти к гному и дереву',callback_data='near_gnome_alive')
+        keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='Выйти из комнаты',callback_data='gnome_door')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Вы стоите около двери, поодаль от гнома и дерева.',reply_markup=keyboard)
+
     elif call.data == 'near_gnome_alive': # Начать ветку диалога с гномом.
         bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
         keyboard = types.InlineKeyboardMarkup()
-        key_oven = types.InlineKeyboardButton(text='Пырнуть гнома',callback_data='gnome_killer')
-        keyboard.add(key_oven)
-        key_oven = types.InlineKeyboardButton(text='"Меня зовут Жерард..?"',callback_data='dialogue_gerard')
-        keyboard.add(key_oven)
-        key_oven = types.InlineKeyboardButton(text='"Это был твой ключ?"',callback_data='dialogue_key')
-        keyboard.add(key_oven)
-        key_oven = types.InlineKeyboardButton(text='"Кто ты?"',callback_data='dialogue_who')
-        keyboard.add(key_oven)
-        bot.send_message(call.message.chat.id, text='Вы подходите к сидящему гному. Он обращается к вам:\n - Здравствуй, Жерард. Ты нашел ключ, который я спрятал!',reply_markup=keyboard)
+        if (flags['who'] == 0 and flags['gerard'] == 0) or (flags['who'] == 0 and flags['gerard'] == 1) or (flags['who'] == 1 and flags['gerard'] == 0):
+            key_oven = types.InlineKeyboardButton(text='Пырнуть гнома',callback_data='gnome_killer')
+            keyboard.add(key_oven)
+        if flags['gerard'] == 0:
+            key_oven = types.InlineKeyboardButton(text='"Меня зовут Жерард..?"',callback_data='dialogue_gerard')
+            keyboard.add(key_oven)
+        if flags['who'] == 0:
+            key_oven = types.InlineKeyboardButton(text='"А кто ты?"',callback_data='dialogue_who')
+            keyboard.add(key_oven)
+        if flags['who'] == 1 and flags['gerard'] == 1:
+            key_oven = types.InlineKeyboardButton(text='"Что мне делать теперь?"',callback_data='dialogue_what_to_do')
+            keyboard.add(key_oven)
+        if flags['who'] == 0 and flags['gerard'] == 0:
+            bot.send_message(call.message.chat.id, text='Вы подходите к сидящему гному. Он обращается к вам:\n - Здравствуй, Жерард. Ты нашел ключ, который я спрятал!',reply_markup=keyboard)
+        else:
+            bot.send_message(call.message.chat.id, text='Гном смотрит на вас.',reply_markup=keyboard)
 
     elif call.data == 'gnome_killer': # Вы убили старого гнома. У вас нет души.
         bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
         keyboard = types.InlineKeyboardMarkup()
-        key_oven = types.InlineKeyboardButton(text='Подобрать и съесть яблоко',callback_data='yum')
+        key_oven = types.InlineKeyboardButton(text='Подобрать яблоко с земли и съесть',callback_data='yum')
         keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='Обыскать труп',callback_data='gnome_looting')
+        keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='Душа? Нет, у меня такой нет.',callback_data='no_soul')
         keyboard.add(key_oven)
         flags['gnome_killed'] = 1
         bot.send_message(call.message.chat.id, text='Вы решили, что этот гном со своей крашеной синей бородой вас слишком сильно раздражает, выхватили кинжал и пырнули его в живот.\
                          \n- Жерард... За что?\nВы безэмоционально вытаскиваете кинжал из его живота и смотрите, как он истекает кровью. У вас вообще есть душа?',reply_markup=keyboard)
+
+    elif call.data == 'no_soul': # Я такая мета-мета!
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        bot.send_message(call.message.chat.id, text='Да? Наверное, вы этого не осознаете, но если у вас нет души, то вы не живете.\nСледовательно, вы погибли! Если хотите начать заново, то напишите "/start". И подыщите себе душу.')
+
+    elif call.data == 'yum': # Съел яблоко.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Вернуться к трупу гнома',callback_data='gnome_looting')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Вы подобрали яблоко, лежащее рядом с трупом бессердечно убитого гнома и съели. На него попало немного крови вашей жертвы, но вас это не смутило. Питательно!', reply_markup=keyboard)
+
+    elif call.data == 'gnome_looting': # Обыск гнома.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Отойти от трупа',callback_data='gnome_room_dead')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='Вы осматриваете труп гнома. В его кармане вы обнаруживаете золотой ключ. Интересно, от какого он замка?', reply_markup=keyboard)
+
+    elif call.data == 'dialogue_gerard': # Ветка диалога "меня зовут Жерард?"
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='"Мой отец запер меня здесь?"',callback_data='dialogue_father')
+        keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='"Какое ужасное у меня имя."',callback_data='dialogue_horrible_name')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='- Именно так! А если быть точным, тебя зовут Жерард Опэн фон Эйайович III.'\
+                        ' Твой отец, Жерард Опэн фон Эйайович II, запер тебя здесь.',reply_markup=keyboard)
+    
+    elif call.data == 'dialogue_horrible_name': # Плохое имя.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        flags['gnome_relationship'] -= 1
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='"Оу. А что там про отца?"',callback_data='dialogue_father')
+        keyboard.add(key_oven)
+        flags['gerard'] = 1
+        bot.send_message(call.message.chat.id, text='- Вообще-то это имя было придумано мной.',reply_markup=keyboard)
+    
+    elif call.data == 'dialogue_father': # Отец.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='"Отец года..."',callback_data='near_gnome_alive')
+        keyboard.add(key_oven)
+        flags['gerard'] = 1
+        bot.send_message(call.message.chat.id, text='- Жерард II запер тебя здесь из-за того, что боялся. Он настолько боялся твоего внутреннего магического таланта, что отправил тебя в заточение, стерев тебе все воспоминания.',reply_markup=keyboard)
+
+    elif call.data == 'dialogue_who': # Кто гном такой?
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        flags['who'] = 1
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='"И при этом ты просто сидишь здесь."',callback_data='dialogue_useless')
+        keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='"Мне повезло иметь такого союзника!"',callback_data='dialogue_flattery')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='- Я - легендарный маг, твой учитель магии, тот, кто воспитывал тебя с самого детства!',reply_markup=keyboard)
+
+    elif call.data == 'dialogue_useless': # Обиделся.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        flags['gnome_relationship'] -= 1
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='"Ну, чтож, раз так..."',callback_data='near_gnome_alive')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='- Я уже сделал, все что мог, мальчишка! Твой отец невероятно силен.',reply_markup=keyboard)
+
+    elif call.data == 'dialogue_flattery': # Порадовался.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='"Хм."',callback_data='near_gnome_alive')
+        keyboard.add(key_oven)
+        bot.send_message(call.message.chat.id, text='- Именно, именно!\nГном ухмыльнулся.',reply_markup=keyboard)
+
+    elif call.data == 'dialogue_what_to_do': # Выход из диалога.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='"Не прощаемся..."',callback_data='gnome_room_alive')
+        keyboard.add(key_oven)
+        flags['golden_key'] = 1
+        bot.send_message(call.message.chat.id, text='- Хм... Возможно, ты сможешь уговорить своего отца - ведь ты не помнишь ни одного магического слова... Так и быть, стоит рискнуть. Держи, это ключ от комнаты Жерарда. Она дальше по коридору. Не прощаемся!',reply_markup=keyboard)
+
+
 
 bot.polling(none_stop=True, interval=0)

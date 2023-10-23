@@ -65,7 +65,7 @@ class Npc():
         self.kz -= 5
         self.kz_flag = 0
 
-player1 = Player(hp=20, kz=14, kz_flag=0, hillC=1, attack_flag=0)
+player1 = Player(hp=2, kz=14, kz_flag=0, hillC=1, attack_flag=0)
 enemy1 = Npc(hp=10, kz=10,kz_flag=0, attack_flag=0)
 flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'skeleton_fight':0}
 
@@ -78,7 +78,7 @@ def get_text_messages(message):
         global flags
         global player1
         global enemy1
-        player1 = Player(hp=20, kz=14, kz_flag=0, hillC=1, attack_flag=0)
+        player1 = Player(hp=2, kz=14, kz_flag=0, hillC=1, attack_flag=0) # изменять для тестирования праметры игрока
         enemy1 = Npc(hp=10, kz=10,kz_flag=0, attack_flag=0)
         flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'skeleton_fight':0}
         keyboard = types.InlineKeyboardMarkup()
@@ -203,7 +203,7 @@ def callback_worker(call):
 
     elif call.data == "fight_loop": # запускает круг боя(условия выхода пока нет)
         global enemy1
-        enemy1 = Npc(hp=10, kz=10, kz_flag=0, attack_flag=0)
+        enemy1 = Npc(hp=10, kz=10, kz_flag=0, attack_flag=0) # изменять для тестирования праметры противника
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=None)
         bot.send_message(call.message.chat.id,text='Повернув влево и приближаясь к источнику странных звуков, ваше сердце начинает биться сильнее от страха и неизвестности. По мере продвижения по коридору, вы видите что-то, что быстро вызывает в вас тревожное волнение.'\
                         ' Ваш взгляд падает на живого скелета, бездумно бродящего вдоль коридора. В его руках вы видите ржавый меч. Скелет явно заметил ваше присутствие и направил свой меч в вашем направлении.',reply_markup=None)
@@ -219,11 +219,13 @@ def callback_worker(call):
         bot.send_message(call.message.chat.id, "Выберите действие!", reply_markup=keyboard)
         print("inside fight")
 
-    elif call.data == "attack_b": # делает атаку по enemy1(надо прописать атаку по игроку)
+    elif call.data == "attack_b": # делает атаку по enemy1
         player1.defenceoff()
         enemy1.attack()
+
         #атака по игроку(или оборона)
-        player1.attack()
+
+
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='Атака', callback_data='attack_b')
         keyboard.add(key_oven)
@@ -240,15 +242,36 @@ def callback_worker(call):
         else:
             bot.send_message(call.message.chat.id, text="Но вы не попадаете по скелету.")
         time.sleep(0.7)
-        bot.send_message(call.message.chat.id, text=random.choice(enemy_attack_pack))
-        time.sleep(0.7)
-        if player1.attack_flag:
-            bot.send_message(call.message.chat.id, text="Скелет попадает по вам!")
-        else:
-            bot.send_message(call.message.chat.id, text="Но скелет не попадает по вам!")
-        time.sleep(0.7)
-        bot.send_message(call.message.chat.id, text="Ваш HP: "+str(player1.hp)+" HP\nHP скелета: "+str(enemy1.hp)+" HP", reply_markup=keyboard)
-        print("inside attack")
+
+        if enemy1.hp > 0:
+            player1.attack()
+            bot.send_message(call.message.chat.id, text=random.choice(enemy_attack_pack))
+            time.sleep(0.7)
+            if player1.attack_flag:
+                bot.send_message(call.message.chat.id, text="Скелет попадает по вам!")
+            else:
+                bot.send_message(call.message.chat.id, text="Но скелет не попадает по вам!")
+            time.sleep(0.7)
+
+            print("inside attack")
+        elif enemy1.hp <= 0:
+            # bot.send_message(call.message.chat.id, text="С последним решительным ударом, который вы нанесли скелету,\
+            #  он разлетается на кучу костей с характерным звуком. Теперь вы стоите перед развалинами \
+            #  некогда \"живого\" скелета, который больше не представляет никакой угрозы.")
+            keyboard = types.InlineKeyboardMarkup()
+            key_oven = types.InlineKeyboardButton(text='Осмотреть труп скелета', callback_data='looting')
+            keyboard.add(key_oven)
+            bot.send_message(call.message.chat.id, text="С последним решительным ударом, который вы нанесли скелету, он разлетается на кучу костей с характерным звуком. Теперь вы стоите перед развалинами некогда \"живого\" скелета, который больше не представляет никакой угрозы.", reply_markup=keyboard)
+
+        if player1.hp <= 0:
+            bot.send_message(call.message.chat.id, text='Скелет делает решительный выпад. Вы пытаетесь его атаку, но мешкаете, и не успеваете подставить свой кинжал под его удар. Ржавый скелета прорубает ваше левое плечо, после чего застревает там. Вы не чувствуете боли, лишь только то, как ваши силы покидают вас и вам хочется прилечь отдохнуть. Просто отдохнуть...')
+            time.sleep(2)
+            bot.send_message(call.message.chat.id, text='Вы погибли! Чтобы начать заново, напишите "/start".')
+        elif enemy1.hp > 0 and player1.hp > 0:
+            bot.send_message(call.message.chat.id,
+                             text="Ваш HP: " + str(player1.hp) + " HP\nHP скелета: " + str(enemy1.hp) + " HP",
+                             reply_markup=keyboard)
+
 
     elif call.data == "defence_b":
         player1.defenceoff()
@@ -261,26 +284,43 @@ def callback_worker(call):
         keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='Выпить зелье лечения (осталось ' + str(player1.hillC) + ')', callback_data='hill')
         keyboard.add(key_oven)
-        player1.attack()
+
         enemy1.hp -= 2
         print(player1.kz)
         bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
         time.sleep(0.7)
         bot.send_message(call.message.chat.id, text=random.choice(players_safe_attack_pack))
         time.sleep(0.7)
-        if enemy1.attack_flag:
-            bot.send_message(call.message.chat.id, text="Вы попадаете по скелету и готовы отражать его атаку!")
-        else:
-            bot.send_message(call.message.chat.id, text="Вы не попадаете по скелету, но пытаетесь отразить от его атаки.")
+        bot.send_message(call.message.chat.id, text="Вы попадаете по скелету и готовы отражать его атаку!")
         time.sleep(0.7)
-        bot.send_message(call.message.chat.id, text=random.choice(enemy_attack_pack))
-        time.sleep(0.7)
-        if player1.attack_flag:
-            bot.send_message(call.message.chat.id, text="Скелет попадает по вам!")
-        else:
-            bot.send_message(call.message.chat.id, text="Но скелет не попадает по вам!")
-        time.sleep(0.7)
-        bot.send_message(call.message.chat.id, text="Ваш HP: "+str(player1.hp)+" HP\nHP скелета: "+str(enemy1.hp)+" HP", reply_markup=keyboard)
+
+
+        if enemy1.hp > 0:
+            player1.attack()
+            bot.send_message(call.message.chat.id, text=random.choice(enemy_attack_pack))
+            time.sleep(0.7)
+            if player1.attack_flag:
+                bot.send_message(call.message.chat.id, text="Скелет попадает по вам!")
+            else:
+                bot.send_message(call.message.chat.id, text="Но скелет не попадает по вам!")
+            time.sleep(0.7)
+
+        elif enemy1.hp <= 0:
+            bot.send_message(call.message.chat.id, text="С последним решительным ударом, который вы нанесли скелету,он разлетается на кучу костей с характерным звуком. Теперь вы стоите перед развалинами некогда \"живого\" скелета, который больше не представляет никакой угрозы.")
+            keyboard = types.InlineKeyboardMarkup()
+            key_oven = types.InlineKeyboardButton(text='Осмотреть труп скелета', callback_data='looting')
+            keyboard.add(key_oven)
+            bot.send_message(call.message.chat.id, text="С последним решительным ударом, который вы нанесли скелету, он разлетается на кучу костей с характерным звуком. Теперь вы стоите перед развалинами некогда \"живого\" скелета, который больше не представляет никакой угрозы.",
+                             reply_markup=keyboard)
+        if player1.hp <= 0:
+            bot.send_message(call.message.chat.id, text='Скелет делает решительный выпад. Вы пытаетесь блокировать его атаку, но мешкаете, и не успеваете подставить свой кинжал под его удар. Ржавый меч скелета прорубает ваше левое плечо, после чего застревает там. Вы не чувствуете боли, лишь только то, как ваши силы покидают вас и вам хочется прилечь отдохнуть. Просто отдохнуть...')
+            time.sleep(2)
+            bot.send_message(call.message.chat.id, text='Вы погибли! Чтобы начать заново, напишите "/start".')
+        elif enemy1.hp > 0 and player1.hp > 0:
+            bot.send_message(call.message.chat.id,
+                             text="Ваш HP: " + str(player1.hp) + " HP\nHP скелета: " + str(enemy1.hp) + " HP",
+                             reply_markup=keyboard)
+
 
     elif call.data == "hill":
         if player1.hillC > 0 and player1.hp < 20:
@@ -294,7 +334,6 @@ def callback_worker(call):
             keyboard.add(key_oven)
             key_oven = types.InlineKeyboardButton(text='Выпить зелье лечения (осталось ' + str(player1.hillC) + ')',callback_data='hill')
             keyboard.add(key_oven)
-            player1.attack()
             player1.hill()
             plhp = player1.hp - plhp
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,reply_markup=None)
@@ -303,14 +342,33 @@ def callback_worker(call):
             time.sleep(0.7)
             bot.send_message(call.message.chat.id, text=f"Вы восстановили {plhp} HP!")
             time.sleep(0.7)
-            bot.send_message(call.message.chat.id, text=random.choice(enemy_attack_pack))
-            time.sleep(0.7)
 
-            if player1.attack_flag:
-                bot.send_message(call.message.chat.id, text="Скелет попадает по вам!")
-            else:
-                bot.send_message(call.message.chat.id, text="Но скелет не попадает по вам!")
-            bot.send_message(call.message.chat.id, text="Ваш HP: "+str(player1.hp)+" HP\nHP скелета: "+str(enemy1.hp)+" HP", reply_markup=keyboard)
+
+            if enemy1.hp > 0:
+                player1.attack()
+                bot.send_message(call.message.chat.id, text=random.choice(enemy_attack_pack))
+                time.sleep(0.7)
+                if player1.attack_flag:
+                    bot.send_message(call.message.chat.id, text="Скелет попадает по вам!")
+                else:
+                    bot.send_message(call.message.chat.id, text="Но скелет не попадает по вам!")
+                time.sleep(0.7)
+
+            elif enemy1.hp <= 0:
+                bot.send_message(call.message.chat.id, text="С последним решительным ударом, который вы нанесли скелету, разлетается на кучу костей с характерным звуком. Теперь вы стоите перед развалинами некогда \"живого\" скелета, который больше не представляет никакой угрозы.")
+                keyboard = types.InlineKeyboardMarkup()
+                key_oven = types.InlineKeyboardButton(text='Осмотреть труп скелета', callback_data='looting')
+                keyboard.add(key_oven)
+                bot.send_message(call.messege.chat.id, text="С последним решительным ударом, который вы нанесли скелету, он разлетается на кучу костей с характерным звуком. Теперь вы стоите перед развалинами некогда \"живого\" скелета, который больше не представляет никакой угрозы.",
+                                 reply_markup=keyboard)
+            if player1.hp <= 0:
+                bot.send_message(call.message.chat.id, text='Скелет делает решительный выпад. Вы пытаетесь блокировать его атаку, но мешкаете, и не успеваете подставить свой кинжал под его удар. Ржавый меч скелета прорубает ваше левое плечо, после чего застревает там. Вы не чувствуете боли, лишь только то, как ваши силы покидают вас и вам хочется прилечь отдохнуть. Просто отдохнуть...')
+                time.sleep(2)
+                bot.send_message(call.message.chat.id, text='Вы погибли! Чтобы начать заново, напишите "/start".')
+            elif enemy1.hp > 0 and player1.hp > 0:
+                bot.send_message(call.message.chat.id,
+                                 text="Ваш HP: " + str(player1.hp) + " HP\nHP скелета: " + str(enemy1.hp) + " HP",
+                                 reply_markup=keyboard)
         elif player1.hp == 20:
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,reply_markup=None)
             time.sleep(0.7)

@@ -72,7 +72,7 @@ player1 = Player(hp=20, kz=14, kz_flag=0, hillC=3, attack_flag=0) #
 enemy1 = Npc(hp=10, kz=10,kz_flag=0, attack_flag=0)               # изменять при дебаге
 flags = {'first_room_searched':0,'torch_acq':0,'first_key_acq':0,'stupid':0,'crossroads':0,'skeleton_fight':0,'gnome_killed':0,'gnome_relationship':2,'gerard':0,'who':0,'golden_key':0,'fountain_room_checked':0,'door_opened':0}
 
-bot = telebot.TeleBot('6682494061:AAFLZH7Qj32HYffI2UQdgpXxj0giooBe5iQ')
+bot = telebot.TeleBot('token')
 
 
 @bot.message_handler(content_types=['text'])
@@ -86,12 +86,14 @@ def get_text_messages(message):
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='Да!', callback_data='first_room_start')
         keyboard.add(key_oven)
-        bot.send_message(message.from_user.id, text='Начать игру с самого начала?', reply_markup=keyboard)
+        bot.send_message(message.from_user.id, text='Начать игру с самого начала? Если вдруг захотите начать заново, то в любой момент введите "/start".', reply_markup=keyboard)
     elif message.text == "/debugMenu":
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='финальный бой', callback_data='fight_loop_final')
         keyboard.add(key_oven)
         key_oven = types.InlineKeyboardButton(text='бой со скелетом', callback_data='fight_loop')
+        keyboard.add(key_oven)
+        key_oven = types.InlineKeyboardButton(text='концовка',callback_data='ending')
         keyboard.add(key_oven)
         bot.send_message(message.from_user.id, text='перейти', reply_markup=keyboard)
     else:
@@ -569,7 +571,7 @@ def callback_worker(call):
     elif call.data == "hill_final":
         if player1.hillC > 0 and player1.hp < 20:
             plhp = player1.hp
-            player1.hill()
+            #player1.hill()
             player1.defenceoff()
             keyboard = types.InlineKeyboardMarkup()
             key_oven = types.InlineKeyboardButton(text='Атака', callback_data='attack_b_final')
@@ -907,7 +909,7 @@ def callback_worker(call):
         keyboard.add(key_oven)
         bot.send_message(call.message.chat.id, text='Вы видите пустую каменную комнату с золотистой дверью спереди и иллюзионной сзади. Очевидно, что эта комната предназначена лишь для создания пустой зоны между иллюзионной дверью позади вас и золотистой спереди.',reply_markup=keyboard)
 
-    elif call.data == 'golden_door':
+    elif call.data == 'golden_door': # Золотистая дверь.
         bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
         keyboard = types.InlineKeyboardMarkup()
         key_oven = types.InlineKeyboardButton(text='Отойти от двери',callback_data='opened_after_fountain')
@@ -917,5 +919,20 @@ def callback_worker(call):
             keyboard.add(key_oven)
         bot.send_message(call.message.chat.id, text='Вы подходите к золотистой двери, замок которой встроен непосредственно в саму дверь.',reply_markup=keyboard)
 
+    elif call.data == 'ending': # Концовка.
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        keyboard = types.InlineKeyboardMarkup()
+        key_oven = types.InlineKeyboardButton(text='Посмотреть состав команды',callback_data='credits')
+        keyboard.add(key_oven)
+        if flags['gnome_killed'] == 1:
+            bot.send_message(call.message.chat.id, text='Окровавленные, вы отходите от тела собственного отца и осматриваете комнату. Есть лишь две двери - из которой вы сюда вошли, и неизвестная с какой-то магической печатью. Вы подходите к этой двери и осознаете, что на ней - магический кодовый замок, требующий 8 цифр. Попробовав одну случайную комбинацию, вы поняли, что на замке стоит и таймер - код можно вводить только раз в 1 час.\nПоходив по всему подземелью, перерыв абсолютно все в поисках какого-либо намека на код, вы ничего не нашли. Также опытным путем вы выяснили, что вода в фонтане все-таки циркулировала, а не поступала извне. Вскоре, после тщетных попыток вскрыть код, вы погибли от жажды. Возможно, не стоило убивать единственное дружелюбное лицо.',reply_markup=keyboard)
+        elif flags['gnome_relationship'] == 0:
+            bot.send_message(call.message.chat.id, text='Окровавленные, вы отходите от тела отца и осматриваете комнату. Пока вы это делали, сзади незаметно подкрался гном.\n- Твой отец был прав.\nИ прежде, чем вы могли опомниться и повернуться, в вашу спину прилетел огненный снаряд, поваливший вас на землю.\n- Если тебя не убить, то ты будешь слишком опасен.\nУмирая, вы наблюдаете, как гном подошел к какой-то двери, на которую вы не успели обратить особого внимания, что-то вводит и выходит на улицу, на свободу. Прямо перед смертью вы почувствовали свежий воздух.',reply_markup=keyboard)
+        elif flags['gnome_relationship'] > 0:
+            bot.send_message(call.message.chat.id, text='Окровавленные, вы отходите от тела отца и осматриваете комнату. Пока вы это делали, сзади к вам подошел ваш знакомый гном.\n- Ты справился, Жерард... Удивительно. И похвально.\nВы поблагодарили гнома в ответ на эти добрые слова.\n- Вон за той дверью - выход, пошли.\nГном подвел вас к двери с магической печатью и, как выяснилось, это печать с кодовым замком на 8 цифр. Он вводит её - 13031179.\n- Твоя дата рождения, Жерард.\nДверь открывается, и вместе с гномом вы наконец выходите на теплое солнце и свежий воздух.',reply_markup=keyboard)
+
+    elif call.data == 'credits':
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        bot.send_message(call.message.chat.id, text='Команда разработки:\nФедоров Роман - автор идеи, сценарист и создатель небоевой части игры\nГромачихин Денис - создатель всей боевой системы')
 
 bot.polling(none_stop=True, interval=0)
